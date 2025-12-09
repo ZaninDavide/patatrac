@@ -1,0 +1,13 @@
+[package]
+name = "patatrack"
+version = "0.0.0"
+compiler = "0.14.1"
+entrypoint = "src/lib.typ"
+authors = ["Davide Zanin <https://github.com/ZaninDavide>"]
+license = "Apache-2.0"
+description = "A powerful and user-friendly Typst package for drawing physics diagrams."
+repository = "https://github.com/ZaninDavide/patatrack"
+keywords = ["physics", "diagrams", "drawing", "rigid-bodies"]
+categories = ["visualization"]
+disciplines = ["physics", "engineering", "education"]
+exclude = ["docs.pdf", "docs.typ"]
