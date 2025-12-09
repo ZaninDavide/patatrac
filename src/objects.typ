@@ -1,68 +1,19 @@
+// -----------------------------> INDEX
+// The objects constructors provided by the package are
+//  - rect
+//  - circle
+//  - incline
+//  - arrow
+//  - point
+//  - rope
+//
+// This file contains all the object constructors provided by the package. 
+
 #import "anchors.typ" as anchors: anchor, to-anchor
-
-// -----------------------------> OBJECTS CREATION
-
-/* 
-An object is a collection of anchors with a specified active anchor and some metadata.
-An object `οbj` is represented by a callable function such that:
- - `obj()` returns the active anchor (equivalent to `obj("anchors").at(obj("active"))`),
- - `obj("anchor-name")` returns an equivalent object but with the specified anchor as active,
- - `obj("anchors")` returns the full dictionary of anchors,
- - `obj("active")` returns the key of the active anchor,
- - `obj("type")` returns the object type (`"line"`, `"rect"`, `"circle"`, etc).
- - `obj("data")` returns the carried metadata.
- - `obj("repr")` returns a dictionary representation of the object meant only for debugging purposes.
-This constructor takes three positional arguments
- - `obj-type`: a `str` that labels the kind of object described by the anchors,
- - `active`: a `str` equal to the name of the active anchor,
- - `anchors`: a `dictionary` with string valued keys and anchor valued fields that constitutes the named collection of anchors in the object.
-and one named argument
-  - `data` (default `none`): some metadata. `any` type is allowed but conventionally `none` and `dictionary` are preferred.
-
-Important design choices:
- - The set of anchors an object carries is not minimal in any sense. The collection of anchors should contain 
-   most of the anchors that the user may find helpful when constructing a diagram. 
- - The information encoded inside `data` is never touched by transformations of the objects, 
-   e.g. rotations and translations, therefore the payload should not contain information 
-   about properties of the object that change under such transformations. No function defined in this package 
-   scales objects therefore geometrical properties (like angles and lengths) can be part of the information.
- - The information encoded inside `data` should not be of artistic/cosmetic nature: no colors, strokes or printed 
-   labels. String ids are allowed but for internal use: not meant to be printed text inside the final image. 
- - Nothing prevents the definition of anchors named "anchors", "active", "type", "data" or "repr", nevertheless they 
-   won't be accessible via the notation `obj("anchor-name")` but rather only via `obj("anchors").at("anchor-name")`.
-*/
-#let object(obj-type, active, anchors, data: none) = (..args) => {
-  let args = args.pos()
-  if args.len() == 0 { return anchors.at(active) }
-  if args.len() >  1 { panic("Cannot specify more than one key") }
-  if not (active in anchors.keys()) { panic("The specified active anchor \"" + repr(active) + "\" is not a valid as it is not part of the specified list of anchors in this object.") }
-  
-  let key = args.at(0)
-  if type(key) == str {
-    if key == "anchors" {
-      return anchors
-    } else if key == "active" {
-      return active
-    } else if key == "type" {
-      return obj-type
-    } else if key == "data" {
-      return data
-    } else if key == "repr" {
-      return ("type": obj-type, "active": active, "anchors": anchors, "data": data)
-    } else if key in anchors.keys() {
-      return object(obj-type, key, anchors, data: data)
-    } else {
-      panic("Cannot activate anchor \"" + repr(active) + "\" as it is not part of the specified list of anchors in this object. This object contains the following anchors: " + repr(anchors.keys()))
-    }
-  }
-
-  panic("Unknown argument type '" + repr(type(key)) + "', '" + repr(str) + "' was expected.")
-}
-
-// -----------------------------> STANDARD OBJECTS CONSTRUCTORS
+#import "core.typ": object
 
 /*
-A rectangle
+Creates an object of type "rectangle" centered at the origin with the given width and height
 */
 #let rect(width, height) = object("rect", "c",
   (
@@ -87,6 +38,9 @@ A rectangle
   data: ("width": width, "height": height)
 )
 
+/*
+Creates an object of type "circle" centered at the origin with the given radius
+*/
 #let circle(radius) = {
   let sqrt2 = calc.sqrt(2)
   return object("circle", "c", data: ("radius": radius), (
@@ -114,6 +68,13 @@ A rectangle
   ))
 }
 
+/*
+Creates an object of type "incline". It represents a right-angle triangle
+with base of length `width` and base to hypotenuse angle of |`angle`|.
+The parameter `angle` can be 
+ - in the range (0, 90deg): the incline goes upward moving clockwise on the surface,
+ - in the range (-90deg, 0): the incline goes downward moving clockwise on the surface.
+*/
 #let incline(width, angle) = {
   if angle > 90deg or angle < -90deg {
     panic("Incline angle must be between -90deg and 90deg")
@@ -143,9 +104,15 @@ A rectangle
   }
 }
 
-#let arrow(start, length, rot: true) = {
+/*
+Creates an object of type "arrow", representing an arrow
+pointing from the location of the anchor `start` towards the normal
+direction to `start` of total length `length`. If `angle` is not `none`
+the anchor rotation is ignored and `angle` is used instead.
+*/
+#let arrow(start, length, angle: none) = {
   let start = to-anchor(start) 
-  if not rot { start = anchor(start.x, start.y, 0deg) }
+  if angle != none { start = anchor(start.x, start.y, angle) }
   return object("arrow", "start", 
     (
       "start": start,
@@ -162,7 +129,7 @@ A rectangle
 }
 
 /*
-A `rope` is an objects that represents a one dimensional string that wraps around
+Creates an object of type `rope`, representing a one dimensional string that wraps around
 points and circles. 
 
 Abstractly, a `rope` is completely specified by its anchors

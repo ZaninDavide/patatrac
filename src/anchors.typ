@@ -7,9 +7,7 @@
 //  - ROTATIONS
 //  - ROTO-TRANSLATIONS
 //
-// Conventions:
-//  - `angle` is the name of a generic angle while `rot` is the name that 
-//    we give specifically to angles that represent the rotation of an anchor
+// This file contains all the logic for anchors.
 
 
 // -----------------------------> ANCHORS CREATION
