@@ -30,12 +30,10 @@
   let C3 = move(circle(20), -40, -10)
   let C4 = move(circle(10), 20, -50)
 
-  let my-rope = rope(A("r"), C("tr"), I("br"), C2("t"), C3("r"), C4("t"), I("bl"))
-  repr(my-rope("repr"))
+  let my-rope = rope(A("r"), C("tr"), I("br"), C2("t"), C3("r"), C4("t"), I("bl"), (20, -10))
 
-
-
-  draw(I, A, B, C, weight, friction, normal, P, Q, C2, C3, C4, my-rope, stroke: 1pt, debug: false)
+  // draw(I, A, B, C, weight, friction, normal, P, Q, C2, C3, C4, my-rope, stroke: 1pt, debug: true)
+  draw(my-rope, stroke: 1pt, debug: true)
 }
 
 #{

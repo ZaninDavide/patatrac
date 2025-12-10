@@ -218,6 +218,20 @@ Named arguments lock one coordinate to `anchor1`'s value.
   return term-by-term-sum(anc, (anc.x*0, anc.y*0, angle))
 }
 
+#let look-at(anchor1, anchor2) = {
+  let a1 = to-anchor(anchor1)
+  let a2 = to-anchor(anchor2)
+  
+  return anchor(a1.x, a1.y, calc.atan2(a2.x - a1.x, a2.y - a1.x))
+}
+
+#let look-from(anchor1, anchor2) = {
+  let a1 = to-anchor(anchor1)
+  let a2 = to-anchor(anchor2)
+  
+  return anchor(a1.x, a1.y, calc.atan2(a1.x - a2.x, a1.y - a2.x))
+}
+
 
 // -----------------------------> ROTO-TRANSLATIONS
 
