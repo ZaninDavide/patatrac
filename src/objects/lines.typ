@@ -51,12 +51,10 @@ Creates an object of type `"rope"`, representing a one dimensional string that w
 points and circles. 
 ``` 
 // Example
-import patatrack: *
+import patatrac: *
 let C = move(circle(10), 50, 50))
 let R = rope((0,0), C, (100, 0))
 ```
-The rope object will contain a lot of anchors. First, there's a set of anchors
-named with consecutive numbers that 
 
 Abstractly, a `rope` is completely specified by its anchors
 and an associated list of non-negative radii associated with each anchor. 

@@ -5,24 +5,25 @@
 // A debug renderer for cetz that draws the objects' anchors
 #let debug = {
   let draw-anchors(obj, style: (:)) = {
-    for anc in obj("anchors").values() {
+    for (key, anc) in obj("anchors") {
+      let factor = if key == obj("active") { 1.5 } else { 1 }
       // normal
       cetz.draw.line(
         (anc.x, anc.y),
         (
-          (anc.x + 5*calc.cos(anc.rot+90deg)), 
-          (anc.y + 5*calc.sin(anc.rot+90deg))
+          (anc.x + 5*factor*calc.cos(anc.rot+90deg)), 
+          (anc.y + 5*factor*calc.sin(anc.rot+90deg))
         ),
-        stroke: 1pt + green,
+        stroke: 1pt*factor + green,
       )
       // tangent
       cetz.draw.line(
         (anc.x, anc.y),
         (
-          (anc.x + 2*calc.cos(anc.rot)), 
-          (anc.y + 2*calc.sin(anc.rot))
+          (anc.x + 2*factor*calc.cos(anc.rot)), 
+          (anc.y + 2*factor*calc.sin(anc.rot))
         ),
-        stroke: 1pt + red,
+        stroke: 1pt*factor + red,
       )
     }
   };
@@ -76,13 +77,17 @@
   }
   
   let draw-arrow(obj, style: (:)) = {
-    let style = (stroke: auto) + style
+    let paint = stroke(style.at("stroke", default: black)).paint
+    let style = (
+      stroke: auto, 
+      mark: (end: "triangle", fill: if paint == auto { black } else { paint }),
+    ) + style
+
 
     let points = obj("anchors")
-    cetz.draw.line(stroke: style.stroke,
+    cetz.draw.line(stroke: style.stroke, mark: style.mark,
       (points.start.x, points.start.y),
       (points.end.x, points.end.y),
-      mark: (end: "stealth", fill: black),
     )
   }
   
@@ -93,8 +98,8 @@
       fill: black, 
       align: center + horizon, 
       label: none,
-      lx: 0,
-      ly: 0,
+      lx: 0 * obj().x,
+      ly: 0 * obj().x,
     ) + style
 
     let align-to-cetz-anchor(align) = (
