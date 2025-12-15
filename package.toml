@@ -10,4 +10,4 @@ repository = "https://github.com/ZaninDavide/patatrac"
 keywords = ["physics", "diagrams", "drawing", "rigid-bodies"]
 categories = ["visualization"]
 disciplines = ["physics", "engineering", "education"]
-exclude = ["docs.pdf", "docs.typ"]
+exclude = ["docs.pdf", "docs.typ", "/gallery/*"]

@@ -158,7 +158,7 @@ Every object carries with it a set of anchors. Every anchor is a point in space 
 
 #raw(repr(patatrac.rect(100,20)("anchors")), lang: "typc")
 
-The anchors are placed both at the vertices and at the centers of the faces of the rectangle and their rotation specify the tangent direction at every point. If you pay attention you will see that the rotation of the anchors is an angle which increases as one rotates counter-clockwise and with zero corresponding to the right direction. If you use the renderer `patatrac.renderers.cetz.debug` you will see exactly where and how the anchors are placed: red corresponds to the tangent (local-$x$) direction and green to the normal (local-$y$) direction.
+The anchors are placed both at the vertices and at the centers of the faces of the rectangle and their rotations specify the tangent direction at every point. If you pay attention you will see that the rotation of the anchors is an angle which increases as one rotates counter-clockwise and with zero corresponding to the right direction. If you use the renderer `patatrac.renderers.cetz.debug` you will see exactly where and how the anchors are placed: red corresponds to the tangent (local-$x$) direction and green to the normal (local-$y$) direction.
 
 ```typc
 draw(floor)
@@ -356,14 +356,14 @@ The whole `patatrac` package is structured around three things:
 1. anchors, 
 2. objects,
 3. renderers.
-Let's define theme one by one. 
+Let's define them one by one. 
 
-*_1. Anchors_* are simply dictionaries with three entries `x`, `y` and `rot` that are meant to specify a local 2D coordinate system. The values associated with `x` and `y` are either lengths or numbers and the package assumes that this choice is unique for all the anchors used in the drawing. These two entries specify the origin of the local coordinate system on the canvas. `rot` on the other end always takes values of type `angle` and specifies the direction in which the local-x axis is pointing. Whenever `patatrac` expects the argument of a method to be an anchor it automatically calls `anchor.to-anchor` on that argument. This allows you, the end user, to specify anchors in many different styles:
+*_1. Anchors_* are simply dictionaries with three entries `x`, `y` and `rot` that are meant to specify a 2D coordinate system. The values associated with `x` and `y` are either lengths or numbers and the package assumes that this choice is unique for all the anchors used in the drawing. These two entries specify the origin of the local coordinate system on the canvas. `rot` on the other end always takes values of type `angle` and specifies the direction in which the local-x axis is pointing. Whenever `patatrac` expects the argument of a method to be an anchor it automatically calls `anchor.to-anchor` on that argument. This allows you, the end user, to specify anchors in many different styles:
 - `(x: ..., y: ..., rot: ...)`,
 - `(x: ..., y: ...)`,
 - `(..., ..., ...)`,
 - `(..., ...)`.
-All options where the rotation is not specified default to `0deg`. Moreover, objects can automatically be converted to anchors: `to-anchor` simply results in the object's active anchor. The local coordinate system is right-handed if the positive $z$-direction is taken to point from the screen towards our eyes, such that.
+All options where the rotation is not specified default to `0deg`. Moreover, objects can automatically be converted to anchors: `to-anchor` simply results in the object's active anchor. The local coordinate system is right-handed if the positive $z$-direction is taken to point from the screen towards our eyes.
 
 *_2. Objects_* are special functions created with a call to an object constructor. All object constructors ultimately reduce to a call to `object`, so that all objects behave in the same way. The result is a callable function, let's call it `obj`, such that:
  - `obj()` returns the active anchor,
@@ -374,10 +374,10 @@ All options where the rotation is not specified default to `0deg`. Moreover, obj
  - `obj("data")` returns the carried metadata,
  - `obj("repr")` returns a dictionary representation of the object meant only for debugging purposes.
 
-*_3. Renderers_* are special functions created with a call to `renderer`. A renderer is essentially a machine that takes one or more objects, associates each object to a drawing function according to the object's type and returns the rendered result. If you want to retrieve the dictionary of type-function pairs call the renderer without providing any argument. If you specify positional arguments, the renderer will pass them to the drawing functions as styling options.
+*_3. Renderers_* are special functions created with a call to `renderer`. A renderer is essentially a machine that takes one or more objects, associates each object to a drawing function according to the object's type and returns the rendered result. If you want to retrieve the dictionary of type-function pairs call the renderer without providing any argument. If you specify named arguments, the renderer will pass them to the drawing functions as styling options.
 
 = Ropes
-Normally, drawing #link("https://en.wikipedia.org/wiki/Atwood_machine")[Atwood machines] tends to be really cumbersome, but with `patatrack` ropes are a lot of fun to draw. The main idea behind how ropes work is the following:
+Normally, drawing #link("https://en.wikipedia.org/wiki/Atwood_machine")[Atwood machines] tends to be really cumbersome, but with `patatrack` pulleys are a lot of fun to draw, thanks to the mechanics of `rope`s. The main idea behind how ropes work is the following:
 
 #align(center)[_ropes are one dimensional strings that wrap around anchors and circles._]
 
