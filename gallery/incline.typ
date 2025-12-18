@@ -6,7 +6,15 @@
 
 #place(center + horizon, canvas(length: 0.5mm, {
   import patatrac: *
-  let draw = patatrac.renderers.cetz.standard
+  let draw = patatrac.renderers.cetz.standard(
+    rect: style => {
+      if "color" in style {
+        style.fill = style.color
+        style.stroke = 2pt + style.color.darken(60%)
+      }
+      style
+    }
+  )
 
   let sideA = 20
   let sideB = 15
@@ -38,8 +46,8 @@
   draw(point(tension2("c"), rot: false), lx: 10, label: math.arrow($T_2$), align: bottom)
   draw(point(C("c")))
   
-  draw(A, fill: blue, stroke: 2pt + blue.darken(60%))
-  draw(B, fill: red, stroke: 2pt + red.darken(60%))
+  draw(A, color: blue)
+  draw(B, color: red)
   draw(point(A("c")), label: text(fill: white, $M$))
   draw(point(B("c")), label: text(fill: white, $m$), ly: 1)
   
@@ -49,4 +57,5 @@
     coord(I("br")), 
     coord(I("tr")), 
   )
+    
 }.flatten()))

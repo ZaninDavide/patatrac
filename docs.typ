@@ -268,7 +268,7 @@ draw(floor, A, B, k)
   draw(floor, A, B, k)
 }.flatten())
 
-
+== Styling
 The styling is pretty self-explanatory. The only thing to notice is that objects drawn with the same call to `draw` share the same styling options, therefore multiple calls to `draw` are required for total stylistic freedom.
 ```typc
 // ...
@@ -300,7 +300,7 @@ draw(B, stroke: 2pt, fill: blue)
   draw(B, stroke: 2pt, fill: blue)
 }.flatten())
 
-Since you are inside a `cetz` canvas you are free to add whatever detail you like to make your picture more expressive. This picture is nice but drawing it without `patatrac` wouldn't have been much harder (well, drawing the spring is not a piece of cake but bare with me). I want you to see where `patatrac` shines so `stick` with me while I exchange the floor for an incline.
+Remember that since you are inside a `cetz` canvas you are free to add whatever detail you like to make your picture more expressive. This picture is nice but drawing it without `patatrac` wouldn't have been much harder (well, drawing the spring is not a piece of cake but bare with me). I want you to see where `patatrac` shines so `stick` with me while I exchange the floor for an incline.
 ```typc
 let floor = incline(100, 20deg)
 let A = rect(15, 15)
@@ -389,21 +389,23 @@ Okay, now that we have the final drawing we can spend a few words to clarify wha
 #set enum(spacing: 15pt, indent: 15pt)
 #set list(spacing: 15pt, indent: 15pt)
 
-= System <system>
+= Core system <system>
 The whole `patatrac` package is structured around three things:
 1. anchors, 
 2. objects,
 3. renderers.
 Let's define them one by one. 
 
-*_1. Anchors_* are simply dictionaries with three entries `x`, `y` and `rot` that are meant to specify a 2D coordinate system. The values associated with `x` and `y` are either lengths or numbers and the package assumes that this choice is unique for all the anchors used in the drawing. These two entries specify the origin of the local coordinate system on the canvas. `rot` on the other end always takes values of type `angle` and specifies the direction in which the local-x axis is pointing. Whenever `patatrac` expects the argument of a method to be an anchor it automatically calls `anchor.to-anchor` on that argument. This allows you, the end user, to specify anchors in many different styles:
+== Anchors
+Anchors are simply dictionaries with three entries `x`, `y` and `rot` that are meant to specify a 2D coordinate system. The values associated with `x` and `y` are either lengths or numbers and the package assumes that this choice is unique for all the anchors used in the drawing. These two entries specify the origin of the local coordinate system on the canvas. `rot` on the other end always takes values of type `angle` and specifies the direction in which the local-x axis is pointing. Whenever `patatrac` expects the argument of a method to be an anchor it automatically calls `anchors.to-anchor` on that argument. This allows you, the end user, to specify anchors in many different styles:
 - `(x: ..., y: ..., rot: ...)`,
 - `(x: ..., y: ...)`,
 - `(..., ..., ...)`,
 - `(..., ...)`.
 All options where the rotation is not specified default to `0deg`. Moreover, objects can automatically be converted to anchors: `to-anchor` simply results in the object's active anchor. The local coordinate system is right-handed if the positive $z$-direction is taken to point from the screen towards our eyes.
 
-*_2. Objects_* are special functions created with a call to an object constructor. All object constructors ultimately reduce to a call to `object`, so that all objects behave in the same way. The result is a callable function, let's call it `obj`, such that:
+== Objects
+Objects are special functions created with a call to an object constructor. All object constructors ultimately reduce to a call to `object`, so that all objects behave in the same way. The result is a callable function, let's call it `obj`, such that:
  - `obj()` returns the active anchor,
  - `obj("anchor-name")` returns an equivalent object but with the specified anchor as active,
  - `obj("anchors")` returns the full dictionary of anchors,
@@ -412,7 +414,34 @@ All options where the rotation is not specified default to `0deg`. Moreover, obj
  - `obj("data")` returns the carried metadata,
  - `obj("repr")` returns a dictionary representation of the object meant only for debugging purposes.
 
-*_3. Renderers_* are special functions created with a call to `renderer`. A renderer is essentially a machine that takes one or more objects, associates each object to a drawing function according to the object's type and returns the rendered result. If you want to retrieve the dictionary of type-function pairs call the renderer without providing any argument. If you specify named arguments, the renderer will pass them to the drawing functions as styling options.
+If you want to create an object from scratch all you need to do is to use the `object` constructor yourself.
+```typc
+let custom = patatrac.objects.object(
+  "custom-type-name", 
+  "active-anchor-name",
+  dictionary-of-anchors,
+  data: payload-of-metadata 
+)
+```
+
+== Renderers
+A renderer is a function whose job is to take default styling options and return a function capable of rendering objects. This function will take one or more objects, associate each object to a drawing function according to the object's type and return the rendered result, all of this while taking care of any styling option. The journey from a set of drawing functions to an actual drawing starts with a call to `renderer`.
+```typc
+let my-renderer = patatrac.renderers.renderer(
+  // drawing functions
+  rect: (obj, style: (:)) => { ... },
+  circle: (obj, style: (:)) => { ... },
+  ...
+)
+```
+For example, this is the way in which `patatrac.renderers.cetz.standard` is defined. `my-renderer` is not yet ready to render stuff: we need to specify any default styling option. We do this by calling `my-renderer`itself.
+```typc
+let draw = my-renderer(rect: (stroke: 2pt))
+```
+The variable `draw` is the function we use to actually render objects. This step where we provide defaults is kept separate from the call to `renderer` so that the end user can put his own defaults into the renderer: the developer should expose `my-renderer` and not `draw`. Defaults that are set by the developer can simply be hardcoded inside the drawing functions; and this is exactly how the package does for its own renderers. Now, use `draw` to print things.
+```typc
+draw(circle(20), fill: red)
+```
 
 = Ropes
 Normally, drawing #link("https://en.wikipedia.org/wiki/Atwood_machine")[Atwood machines] tends to be really cumbersome, but with `patatrack` pulleys are extremely easy to draw, thanks to the mechanics of `rope`s. The main idea behind how ropes work is the following:
@@ -423,25 +452,30 @@ To create a rope all you have to do is to provide the list of anchors and circle
 you want the rope to wrap around. Since there are two ways in which any given rope can wrap around a circle, the rotation of the active anchor of the circle will tell the rope from which direction to start "orbiting" around the circle. An example will make everything very clear.
 
 ```typc
-let C = circle(15)
-let R = rope((-50, 0), C("b"), (+100, 0))
-draw(C, R)
+let C1 = circle(15)
+let C2 = place(circle(10), (50, 0))
+let R = rope((-50, 0), C1("b"), C2("t"), (+100, 0))
+draw(C1, C2)
+draw(R, stroke: 2pt + blue)
 ```
 #canvas({
   import patatrac: *
   let draw = patatrac.renderers.cetz.standard()
   
-  let C = circle(20)
-  let R = rope((-50, 0), C("b"), (+100, 0))
-  draw(C, R)
+  let C1 = circle(15)
+  let C2 = place(circle(10), (50, 0))
+  let R = rope((-50, 0), C1("b"), C2("t"), (+100, 0))
+  draw(C1, C2)
+  draw(R, stroke: 2pt + blue)
 }.flatten())
 
 Ropes provide many different anchors. Anchors are named with increasing whole numbers starting from one converted to strings and eventually followed by a letter `"i"`, `"m"`, `"o"`. The letter `"i"` specifies that we are either starting an arc of circumference around a circle or approaching a vertex. The letter `"m"` denotes anchors which are placed at the middle of an turn. The letter `"o"` is placed at the end of anchors that either specify the outgoing direction from a vertex or the last point on an arc. There are also two special anchors `start` and `end`, whose name is self-explanatory. Here is the full list of anchors for the previous example.
 
 #{
   import patatrac: *
-  let C = circle(20)
-  let R = rope((-50, 0), C("b"), (+100, 0))
+  let C1 = circle(15)
+  let C2 = place(circle(10), (50, 0))
+  let R = rope((-50, 0), C1("b"), C2("t"), (+100, 0))
   R("anchors")
 }
 
