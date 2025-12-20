@@ -1,9 +1,7 @@
 #import "../anchors.typ" as anchors
 #import "../objects/object.typ": object, alias
 
-/*
-Creates an object of type "spring", representing an physical spring.
-*/
+/// Creates an object of type "spring", representing an physical spring.
 #let spring(start, end) = {
   let start = anchors.to-anchor(start) 
   let end = anchors.to-anchor(end) 

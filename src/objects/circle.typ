@@ -1,9 +1,7 @@
 #import "../anchors.typ" as anchors: anchor, to-anchor
 #import "../objects/object.typ": object
 
-/*
-Creates an object of type "circle" centered at the origin with the given radius
-*/
+/// Creates an object of type "circle" centered at the origin with the given radius
 #let circle(radius) = {
   let sqrt2 = calc.sqrt(2)
   return object("circle", "c", data: ("radius": radius), (

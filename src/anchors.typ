@@ -1,6 +1,6 @@
 // -----------------------------> INDEX
 // Sections:
-//  - ANCHORS CREATION & DESTRUCTION
+//  - ANCHORS CREATION
 //  - ANCHORS ALGEBRA
 //  - TAKING MEASUREMENTS
 //  - TRANSLATIONS
@@ -12,22 +12,18 @@
 
 // -----------------------------> ANCHORS CREATION
 
-/*
-Every anchor represents a coordinate system
-where (`x`,`y`) is the origin of the local coordinate system and
-`rot` is the angle between the paper left-to-right axis and the local x-axis.
-The local y-axis is always directed 90deg anticlockwise with respect to local x-axis.
-Most often, anchors are use to describe points on surfaces. In that case, the local x-axis
-is the tangent to the surface and the local y-axis is the outgoing normal to the surface.
-*/
+/// Every anchor represents a coordinate system
+/// where (`x`,`y`) is the origin of the local coordinate system and
+/// `rot` is the angle between the paper left-to-right axis and the anchor's x-axis.
+/// The local y-axis is always directed 90deg anticlockwise with respect to local x-axis.
+/// Most often, anchors are use to describe points on surfaces. In that case, the local x-axis
+/// is the tangent to the surface and the local y-axis is the outgoing normal to the surface.
 #let anchor(x, y, rot) = (x: x, y: y, rot: rot)
 
-/* 
-Tries to convert anything to an anchor. By default,
-the functions panics if `thing` cannot be converted to an anchor,
-but if the named parameter `panic` is set to `false` it will
-silently return `none`, instead of panicking.
-*/
+/// Tries to convert anything to an anchor. By default,
+/// the functions panics if `thing` cannot be converted to an anchor,
+/// but if the named parameter `panic` is set to `false` it will
+/// silently return `none`, instead of panicking.
 #let to-anchor(thing, panic: true) = {
   if type(thing) == function {
     // THIS IS AN OBJECT
@@ -65,10 +61,8 @@ silently return `none`, instead of panicking.
 
 // -----------------------------> ANCHORS ALGEBRA
 
-/*
-Returns the term by term sum of two anchors. 
-Named arguments lock one coordinate to the first anchor's value.
-*/
+/// Returns the term by term sum of two anchors. 
+/// Named arguments lock one coordinate to the first anchor's value.
 #let term-by-term-sum(anchor1, anchor2) = {
   let a1 = to-anchor(anchor1)
   let a2 = to-anchor(anchor2)
@@ -76,10 +70,8 @@ Named arguments lock one coordinate to the first anchor's value.
   anchor(a1.x + a2.x, a1.y + a2.y, a1.rot + a2.rot)
 }
 
-/*
-Returns the term by term difference `anchor1 - anchor2`. 
-Named arguments lock one coordinate to the first anchor's value.
-*/
+/// Returns the term by term difference `anchor1 - anchor2`. 
+/// Named arguments lock one coordinate to the first anchor's value.
 #let term-by-term-difference(anchor1, anchor2) = {
   let a1 = to-anchor(anchor1)
   let a2 = to-anchor(anchor2)
@@ -90,9 +82,7 @@ Named arguments lock one coordinate to the first anchor's value.
 
 // -----------------------------> TAKING MEASUREMENTS
 
-/*
-Returns the distance between two anchors
-*/
+/// Returns the distance between two anchors
 #let distance(anchor1, anchor2) = {
   let a1 = to-anchor(anchor1)
   let a2 = to-anchor(anchor2)
@@ -104,8 +94,10 @@ Returns the distance between two anchors
 
 // -----------------------------> TRANSLATIONS
 
+/// Moves an anchor in the global coordinate system
 #let move(anchor1, dx, dy) = term-by-term-sum(anchor1, (dx, dy, 0deg))
 
+/// Moves an anchor in its own rotated coordinate system
 #let slide(target, dx, dy, rot: none) = {
   let target = to-anchor(target)
 
@@ -115,14 +107,12 @@ Returns the distance between two anchors
   return move(target, x, y)
 }
 
-/*
-Computes the intersection between two anchors' tangent lines. 
-The output orientation is the first anchor's orientation.
-This function is effectively translating the first anchor along its tangent 
-line to meet the second anchor's tangent line. The result is `none` if
-there's no intersection, otherwise the result is an anchor.
-Named arguments lock one coordinate to `anchor1`'s value.
-*/
+/// Computes the intersection between two anchors' tangent lines. 
+/// The output orientation is the first anchor's orientation.
+/// This function is effectively translating the first anchor along its tangent 
+/// line to meet the second anchor's tangent line. The result is `none` if
+/// there's no intersection, otherwise the result is an anchor.
+/// Named arguments lock one coordinate to `anchor1`'s value.
 #let x-inter-x(anchor1, anchor2) = {
   let a1 = to-anchor(anchor1)
   let a2 = to-anchor(anchor2)
@@ -152,15 +142,13 @@ Named arguments lock one coordinate to `anchor1`'s value.
   )
 }
 
-/*
-Computes the intersection between the first anchors' tangent
-line and the second anchors' normal line. 
-The output orientation is the first anchor's orientation.
-This function is effectively translating the first anchor along its tangent 
-line to meet the second anchor's normal line. The result is `none` if
-there's no intersection, otherwise the result is an anchor.
-Named arguments lock one coordinate to `anchor1`'s value.
-*/
+/// Computes the intersection between the first anchors' tangent
+/// line and the second anchors' normal line. 
+/// The output orientation is the first anchor's orientation.
+/// This function is effectively translating the first anchor along its tangent 
+/// line to meet the second anchor's normal line. The result is `none` if
+/// there's no intersection, otherwise the result is an anchor.
+/// Named arguments lock one coordinate to `anchor1`'s value.
 #let x-inter-y(anchor1, anchor2) = {
   let a1 = to-anchor(anchor1)
   let a2 = to-anchor(anchor2)
@@ -174,15 +162,13 @@ Named arguments lock one coordinate to `anchor1`'s value.
   )
 }
 
-/*
-Computes the intersection between the first anchors' normal
-line and the second anchors' tangent line. 
-The output orientation is the first anchor's orientation.
-This function is effectively translating the first anchor along its normal 
-line to meet the second anchor's tangent line. The result is `none` if
-there's no intersection, otherwise the result is an anchor.
-Named arguments lock one coordinate to `anchor1`'s value.
-*/
+/// Computes the intersection between the first anchors' normal
+/// line and the second anchors' tangent line. 
+/// The output orientation is the first anchor's orientation.
+/// This function is effectively translating the first anchor along its normal 
+/// line to meet the second anchor's tangent line. The result is `none` if
+/// there's no intersection, otherwise the result is an anchor.
+/// Named arguments lock one coordinate to `anchor1`'s value.
 #let y-inter-x(anchor1, anchor2) = {
   let a1 = to-anchor(anchor1)
   let a2 = to-anchor(anchor2)
@@ -196,14 +182,12 @@ Named arguments lock one coordinate to `anchor1`'s value.
   )
 }
 
-/*
-Computes the intersection between two anchors' normal lines. 
-The output orientation is the first anchor's orientation.
-This function is effectively translating the first anchor along its normal 
-line to meet the second anchor's normal line. The result is `none` if
-there's no intersection, otherwise the result is an anchor.
-Named arguments lock one coordinate to `anchor1`'s value.
-*/
+/// Computes the intersection between two anchors' normal lines. 
+/// The output orientation is the first anchor's orientation.
+/// This function is effectively translating the first anchor along its normal 
+/// line to meet the second anchor's normal line. The result is `none` if
+/// there's no intersection, otherwise the result is an anchor.
+/// Named arguments lock one coordinate to `anchor1`'s value.
 #let y-inter-y(anchor1, anchor2) = {
   let a1 = to-anchor(anchor1)
   let a2 = to-anchor(anchor2)
@@ -223,28 +207,31 @@ Named arguments lock one coordinate to `anchor1`'s value.
 
 // -----------------------------> ROTATIONS
 
+/// Rotates an anchor by some angle
 #let rotate(target, angle) = {
   let anc = to-anchor(target)
   return term-by-term-sum(anc, (anc.x*0, anc.y*0, angle))
 }
 
+/// Rotates the first anchor such that its x axis points towards the second anchor
 #let x-look-at(anchor1, anchor2) = {
   let a1 = to-anchor(anchor1)
   let a2 = to-anchor(anchor2)
   
   return anchor(a1.x, a1.y, calc.atan2(a2.x - a1.x, a2.y - a1.y))
 }
+/// Rotates the first anchor such that its y axis points opposite to the second anchor
 #let y-look-from(anchor1, anchor2) = rotate(x-look-at(anchor1, anchor2), 90deg)
+/// Rotates the first anchor such that its x axis points opposite to the second anchor
 #let x-look-from(anchor1, anchor2) = rotate(x-look-at(anchor1, anchor2), 180deg)
+/// Rotates the first anchor such that its y axis points towards to the second anchor
 #let y-look-at(anchor1, anchor2) = rotate(x-look-at(anchor1, anchor2), -90deg)
 
 
 // -----------------------------> ROTO-TRANSLATIONS
 
-/*
-The `pivot` function returns the anchor you get if you take the `target` anchor and rotate it around the `origin` location by `angle`. If `rot` is set to `false` the anchor's rotation
-is fixed to the rotation of `target`.
-*/
+/// The `pivot` function returns the anchor you get if you take the `target` anchor and rotate it around the `origin` location by `angle`. If `rot` is set to `false` the anchor's rotation
+/// is fixed to the rotation of `target`.
 #let pivot(target, origin, angle, rot: true) = {
   let target = to-anchor(target)
   let origin = to-anchor(origin)
@@ -257,11 +244,9 @@ is fixed to the rotation of `target`.
   )
 }
 
-/*
-Linear interpolation between anchors. The field `by` is a `ratio`.
-If `rot` is set to `true` the result's rotation is fixed to the first
-anchor's rotation.
-*/
+/// Linear interpolation between anchors. The field `by` is a `ratio`.
+/// If `rot` is set to `true` the result's rotation is fixed to the first
+/// anchor's rotation.
 #let lerp(anchor1, anchor2, by, rot: true) = {
   let a1 = to-anchor(anchor1)
   let a2 = to-anchor(anchor2)

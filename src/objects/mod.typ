@@ -1,9 +1,9 @@
-#import "object.typ": object, slide, move, place, rotate, match, stick
-#import "arrow.typ": arrow   
-#import "circle.typ": circle 
-#import "incline.typ": incline 
-#import "point.typ": point   
-#import "polygon.typ": polygon 
-#import "rect.typ": rect    
-#import "rope.typ": rope    
-#import "spring.typ": spring
+#import "object.typ": *
+#import "arrow.typ": *   
+#import "circle.typ": * 
+#import "incline.typ": * 
+#import "point.typ": *   
+#import "polygon.typ": * 
+#import "rect.typ": *    
+#import "rope.typ": *    
+#import "spring.typ": *

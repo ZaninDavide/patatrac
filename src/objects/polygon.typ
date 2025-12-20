@@ -1,11 +1,9 @@
 #import "../anchors.typ" as anchors: anchor, to-anchor
 #import "../objects/object.typ": object
 
-/*
-Creates an object of type `polygon`. It represents a 2D closed shape
-whose contour passes through the specified anchors. Conventionally,
-the anchors should be given in clockwise order.
-*/
+/// Creates an object of type `polygon`. It represents a 2D closed shape
+/// whose contour passes through the specified anchors. Conventionally,
+/// the anchors should be given in clockwise order.
 #let polygon(..args) = {
   let points = args.pos().map(to-anchor)
 

@@ -471,7 +471,11 @@ Ropes provide many different anchors. Anchors are named with increasing whole nu
   let C1 = circle(15)
   let C2 = place(circle(10), (50, 0))
   let R = rope((-50, 0), C1("b"), C2("t"), (+100, 0))
-  R("anchors")
+  canvas({
+    cetz.standard()(R, stroke: 2pt + blue)
+    cetz.debug()(R)
+  })
+  [#R("anchors")]
 }
 
 Really, there isn't anything more to say about ropes: they just work.
@@ -494,13 +498,62 @@ Really, there isn't anything more to say about ropes: they just work.
 
 #pagebreak()
 
-= Lists
-In this section you'll find a few useful lists (made by hand, expect errors).
+= Useful lists
+In this section you'll find a few useful lists. This lists are generated semi-automatically and errors are possible; let me know if you find any. 
 
-Anchor transformations: `move`, `slide`, `x-inter-x`, `x-inter-y`, `y-inter-x`, `y-inter-y`, `rotate`, `x-look-at`, `y-look-from`, `x-look-from`, `y-look-at`, `pivot`, `lerp`.
+#let doc(filename) = {
+  import "@preview/tidy:0.4.3" as tidy
+  let docs = tidy.parse-module(read(filename))
+  for fun in docs.functions.sorted(key: fun => fun.name) {
+    ({
+      raw({
+        str(fun.name)
+        "("
+        for (key, value) in fun.args {
+          (str(key) + if "default" in value {
+            ": " + str(value.default)
+          }, )
+        }.join(", ")
+        ")"
+        if fun.return-types != none {
+          " -> "
+          for rt in fun.return-types {
+            str(rt)
+          }
+        }
+      })
+    },)
+  }
+}
 
-Object types: `point`, `arrow`, `spring`, `rope`, `rect`, `circle`, `incline`, `polygon`.
+== Renderers
+This is the complete list of available renderers
 
-Object transformations: `slide`, `move`, `rotate`, `match`, `stick`, `place`.
+- `patatrac.cetz.debug` 
+- `patatrac.cetz.standard` 
+
+== Objects
+Here is the list of all object constructors. These are all available directly under the namespace `patatrac`.
+#{
+  let str = read("src/objects/mod.typ")
+  let objects = str.matches(regex("#import\s+\"([^\"]+)\""))
+  list(
+    ..objects
+    .filter(obj => obj.captures.at(0) != "object.typ")
+    .map(obj => "src/objects/" + obj.captures.at(0))
+    .sorted()
+    .map(filename => doc(filename))
+    .flatten()
+  )
+}
+Here is the list of all object related functions. These are all available directly under the namespace `patatrac`.
+#list(..doc("src/objects/object.typ"))
+
+== Anchors
+Under the namespace `patatrac.anchors` you can find
+
+#list(..doc("src/anchors.typ"))
+
+#pagebreak()
 
 #outline(title: "Index")

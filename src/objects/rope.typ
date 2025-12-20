@@ -1,45 +1,43 @@
 #import "../anchors.typ" as anchors
 #import "../objects/object.typ": object, alias
 
-/*
-Creates an object of type `"rope"`, representing a one dimensional string that wraps around
-points and circles. 
-``` 
-// Example
-import patatrac: *
-let C = move(circle(10), 50, 50))
-let R = rope((0,0), C, (100, 0))
-```
-
-Abstractly, a `rope` is completely specified by its anchors
-and an associated list of non-negative radii associated with each anchor. 
-This is in fact the information we provide to the constructor. The anchors 
-location specify the points the rope wraps around and the associated radii specify 
-the distance the rope keeps from the before mentioned points. The anchors rotation is
-used to determine in which direction the rope must go around the points. If the anchor
-has a zero radii that the rope passes through the anchor's location. If the anchor is 
-the first or last anchor, the rope passes through the anchor's location even if a 
-non-zero radii is specified. If the rope can wrap around an anchors' location with 
-positive radii in two ways than the rotation of the anchor dictates the direction in 
-which the rope wraps around it. Every way of going around the circle has a unique
-starting point where the straight line becomes a curve. Each of this points lies
-on the circumference described by the anchor location and radius.
-Therefore each of this points describes a centrifugal direction looking from the
-center of the circle. The wrap-around direction chosen is the one whose starting 
-outgoing direction is best aligned with the normal of the anchors.
-_Intuitively, the rope wants to wrap from the direction normal to the anchors rotation_.
-
-This `rope(...)` function takes an arbitrary number of parameters. Every argument
-specifies an anchor and its associated radii. In order to specify an anchor with 
-an associated radii of zero, anything that can be converted to an anchor is fine, 
-but if an anchor of non-zero radius is desired than a `circle` is required: the 
-anchor's location is taken to be the circles center, the anchor's rotation is taken 
-to be the rotation of the active anchor of the circle and the wrap-around radius 
-is taken to be the circle's radius. The function returns an object of type `"rope"` with the 
-inputted anchors as anchors and the associated radii stored in the metadata. 
-The anchors names are consecutive numbers, starting from 0, converted to string. 
-The first and last anchors appear twice: also renamed "start" and "end" respectively.
-*/
+/// Creates an object of type `"rope"`, representing a one dimensional string that wraps around
+/// points and circles. 
+/// ```typc
+/// // Example
+/// import patatrac: *
+/// let C = move(circle(10), 50, 50))
+/// let R = rope((0,0), C, (100, 0))
+/// ```
+/// 
+/// Abstractly, a `rope` is completely specified by its anchors
+/// and an associated list of non-negative radii associated with each anchor. 
+/// This is in fact the information we provide to the constructor. The anchors 
+/// location specify the points the rope wraps around and the associated radii specify 
+/// the distance the rope keeps from the before mentioned points. The anchors rotation is
+/// used to determine in which direction the rope must go around the points. If the anchor
+/// has a zero radii that the rope passes through the anchor's location. If the anchor is 
+/// the first or last anchor, the rope passes through the anchor's location even if a 
+/// non-zero radii is specified. If the rope can wrap around an anchors' location with 
+/// positive radii in two ways than the rotation of the anchor dictates the direction in 
+/// which the rope wraps around it. Every way of going around the circle has a unique
+/// starting point where the straight line becomes a curve. Each of this points lies
+/// on the circumference described by the anchor location and radius.
+/// Therefore each of this points describes a centrifugal direction looking from the
+/// center of the circle. The wrap-around direction chosen is the one whose starting 
+/// outgoing direction is best aligned with the normal of the anchors.
+/// _Intuitively, the rope wants to wrap from the direction normal to the anchors rotation_.
+/// 
+/// This `rope(...)` function takes an arbitrary number of parameters. Every argument
+/// specifies an anchor and its associated radii. In order to specify an anchor with 
+/// an associated radii of zero, anything that can be converted to an anchor is fine, 
+/// but if an anchor of non-zero radius is desired than a `circle` is required: the 
+/// anchor's location is taken to be the circles center, the anchor's rotation is taken 
+/// to be the rotation of the active anchor of the circle and the wrap-around radius 
+/// is taken to be the circle's radius. The function returns an object of type `"rope"` with the 
+/// inputted anchors as anchors and the associated radii stored in the metadata. 
+/// The anchors names are consecutive numbers, starting from 0, converted to string. 
+/// The first and last anchors appear twice: also renamed "start" and "end" respectively.
 #let rope(..args) = {
   let nodes = args.pos()
 

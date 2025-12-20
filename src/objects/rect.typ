@@ -1,9 +1,7 @@
 #import "../anchors.typ" as anchors: anchor, to-anchor
 #import "../objects/object.typ": object
 
-/*
-Creates an object of type "rectangle" centered at the origin with the given width and height
-*/
+/// Creates an object of type "rectangle" centered at the origin with the given width and height
 #let rect(width, height) = object("rect", "c",
   (
     "c": anchor(width*0, height*0, 0deg), // do not use (0,0) which would assume unitless coordinates

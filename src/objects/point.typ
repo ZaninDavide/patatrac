@@ -1,12 +1,8 @@
-// -----------------------------> POINTS
-// This file contains the constructors for all objects with no spacial extension:
-//  - point
-
 #import "../anchors.typ" as anchors
 #import "../objects/object.typ": object
 
-// An object constituted by a single anchor `at`.
-// If `rot` is set to `false` the anchor's rotation is set to `0deg`. 
+/// Creates an object constituted by a single anchor.
+/// If `rot` is set to `false` the anchor's rotation is set to `0deg`. 
 #let point(at, rot: true) = {
   let anc = anchors.to-anchor(at)
   if not rot { anc = anchors.anchor(anc.x, anc.y, 0deg) }
