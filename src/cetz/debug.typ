@@ -73,5 +73,7 @@
     rope: draw-anchors,
     polygon: draw-anchors,
     spring: draw-anchors,
+    terrain: draw-anchors,
+    trajectory: draw-anchors,
   ))
 }

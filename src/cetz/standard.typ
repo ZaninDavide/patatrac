@@ -316,6 +316,86 @@
     }
   }
 
+  let draw-terrain(obj, style) = {
+    let data = obj("data")
+    let ancs = obj("anchors")
+    
+    let style = (epsilon: 0.5%, fill: auto, stroke: auto, smooth: true) + style
+    style.epsilon = if type(style.epsilon) == ratio { 
+      style.epsilon/100% * (data.range.last() - data.range.first()) 
+    } else { style.epsilon }
+
+    let element-function = if style.smooth { cetz.draw.hobby } else { cetz.draw.line }
+
+    let x-values = {
+      let x = data.range.first()
+      let to-x(x) = if type(x) == ratio { 
+        data.range.first() + (data.range.last() - data.range.first()) * x/100% 
+      } else { x }
+      (
+        while x < data.range.last() { (x, ); x += style.epsilon } +
+        (data.range.last(), ) +
+        data.stops.values().map(to-x)
+      ).sorted()
+    }
+    return cetz.draw.merge-path(close: true, stroke: style.stroke, fill: style.fill, {
+      element-function(
+        ..for x in x-values {
+          let point = anchors.anchor(
+            (x - data.range.first())*data.scale, 
+            (data.fn)(x)*data.scale,
+            0deg
+          )
+          point = anchors.pivot(point, (0*point.x,0*point.y), ancs.origin.rot)
+          point = anchors.move(point, ancs.origin.x, ancs.origin.y)
+          ((point.x, point.y), )
+        },
+      )
+      cetz.draw.line(
+        (ancs.end.x, ancs.end.y), 
+        (ancs.br.x, ancs.br.y), 
+        (ancs.bl.x, ancs.bl.y),
+      )
+    })
+  }
+
+  let draw-trajectory(obj, style) = {
+    let data = obj("data")
+    let ancs = obj("anchors")
+    
+    let style = (epsilon: 0.5%, stroke: auto, smooth: true) + style
+    style.epsilon = if type(style.epsilon) == ratio { 
+      style.epsilon/100% * (data.range.last() - data.range.first()) 
+    } else { style.epsilon }
+
+    let t-values = {
+      let t = data.range.first()
+      let to-t(t) = if type(t) == ratio { 
+        data.range.first() + (data.range.last() - data.range.first()) * t/100% 
+      } else { t }
+      (
+        while t < data.range.last() { (t, ); t += style.epsilon } +
+        (data.range.last(), ) +
+        data.stops.values().map(to-t)
+      ).sorted()
+    }
+
+    let element-function = if style.smooth { cetz.draw.hobby } else { cetz.draw.line }
+    return element-function(stroke: style.stroke,
+      ..for t in t-values {
+        let fn-t = (data.fn)(t)
+        let point = anchors.anchor(
+          fn-t.at(0)*data.scale,
+          fn-t.at(1)*data.scale,
+          0deg
+        )
+        point = anchors.pivot(point, (0*point.x,0*point.y), ancs.origin.rot)
+        point = anchors.move(point, ancs.origin.x, ancs.origin.y)
+        ((point.x, point.y), )
+      }
+    )
+  }
+
   renderer((
     rect: draw-rect,
     circle: draw-circle,
@@ -325,5 +405,7 @@
     rope: draw-rope,
     polygon: draw-polygon,
     spring: draw-spring,
+    terrain: draw-terrain,
+    trajectory: draw-trajectory,
   ))
 }

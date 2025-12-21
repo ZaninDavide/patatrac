@@ -7,3 +7,5 @@
 #import "rect.typ": *    
 #import "rope.typ": *    
 #import "spring.typ": *
+#import "terrain.typ": *
+#import "trajectory.typ": *

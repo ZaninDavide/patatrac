@@ -461,7 +461,12 @@ let my-renderer = renderer(cetz.standard("functions") + (
 ))
 ```
 
-= Ropes
+#pagebreak()
+
+= Some interesting object types
+We will now spend a few words to describe how to work with a few types of objects that deserve a special treatment in this discussion. To be clear, `patatrack` treats these like all other object types. 
+
+== Ropes
 Normally, drawing #link("https://en.wikipedia.org/wiki/Atwood_machine")[Atwood machines] tends to be really cumbersome, but with `patatrack` pulleys are extremely easy to draw, thanks to the mechanics of `rope`s. The main idea behind how ropes work is the following:
 
 #align(center)[_ropes are one dimensional strings that wrap around anchors and circles._]
@@ -518,6 +523,59 @@ Really, there isn't anything more to say about ropes: they just work.
     }
   )
 }
+
+== Terrains
+Terrains are objects that you can use to create arbitrarily shaped surfaces. All you need to create a `terrain` is a function describing the profile and its domain, expressed as a tuple `(min, max)`.
+
+```typc
+let ground = terrain(
+  x => 0.1 + x*x, (0, 1),
+  scale: 100, A: 30%, B: 0.6,
+)
+draw(ground, fill: luma(90%))
+debug(ground)
+```
+#canvas({
+  import patatrac: *
+  let debug = cetz.debug()
+  let draw = cetz.standard()
+  let ground = terrain(
+    x => 0.1 + x*x, (0, 1),
+    A: 30%, B: 0.6, scale: 100,
+  )
+  draw(ground, fill: luma(90%))
+  debug(ground)
+})
+
+Here we are also specifying two points $A$ and $B$, by giving their position on the specified range either as number or ratio, which are automatically added as anchors tangent to the surface.
+
+== Trajectories
+Trajectories are objects that you can use to create arbitrarily shaped curves. All you need to create a `trajectory` is a function parametrizeing the curve and its domain, expressed as a tuple `(min, max)`.
+
+
+```typc
+let motion = trajectory(
+  t => (1.5*calc.sin(t), calc.cos(t)), (0, 2),
+  scale: 50, A: 30%, B: 1.2,
+)
+draw(motion, stroke: (dash: "dashed", thickness: 1pt))
+debug(motion)
+```
+
+#canvas({
+  import patatrac: *
+  let debug = cetz.debug()
+  let draw = cetz.standard()
+  let motion = trajectory(
+    t => (1.5*calc.sin(t), calc.cos(t)), (0, 2),
+    scale: 50, A: 30%, B: 1.2,
+  )
+  draw(motion, smooth: false, stroke: (dash: "dashed", thickness: 1pt))
+  debug(motion)
+})
+
+Here we are also specifying two points $A$ and $B$, by giving their position on the specified range either as number or ratio, which are automatically added as anchors tangent to the curve.
+
 
 #pagebreak()
 
