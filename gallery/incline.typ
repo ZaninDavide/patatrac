@@ -41,10 +41,11 @@
   let tension2 = arrow(B("t"), 20)
   
   draw(tension1, tension2, stroke: 2pt)
-  draw(point(tension1("end"), rot: false), lx: -8, ly: 2, label: math.arrow($T_1$), align: bottom)
-  draw(point(tension2("c"), rot: false), lx: 10, label: math.arrow($T_2$), align: bottom)
+  draw(point(tension1("end"), rot: false), lx: -8, ly: 2, label: $std.math.arrow(T)_1$, align: bottom)
+  draw(point(tension2("c"), rot: false), lx: 10, label: $std.math.arrow(T)_2$, align: bottom)
   draw(point(C("c")))
   
+  draw(axes(A("c"), 0, 40), stroke: (paint: black, thickness: 2pt, dash: "dashed")) 
   draw(A, color: blue)
   draw(B, color: red)
   draw(point(A("c")), label: text(fill: white, $M$))
@@ -56,5 +57,4 @@
     coord(I("br")), 
     coord(I("tr")), 
   )
-    
 }))

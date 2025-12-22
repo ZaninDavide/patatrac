@@ -9,3 +9,4 @@
 #import "spring.typ": *
 #import "terrain.typ": *
 #import "trajectory.typ": *
+#import "axes.typ": *

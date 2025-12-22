@@ -75,5 +75,6 @@
     spring: draw-anchors,
     terrain: draw-anchors,
     trajectory: draw-anchors,
+    axes: draw-anchors,
   ))
 }

@@ -21,7 +21,7 @@
           }
         }
         return default
-      }
+      }      
       (
         north-east: priority-at(style.radius, "top-right", "top", "right", "rest", default: 0pt),
         north-west: priority-at(style.radius, "top-left", "left", "top", "rest", default: 0pt),
@@ -396,6 +396,30 @@
     )
   }
 
+  let draw-axes(obj, style) = {
+    let style = (stroke: 1pt, mark: none) + style
+    let ancs = obj("anchors")
+
+    return cetz.draw.group({
+      if "x-" in ancs or "x+" in ancs {
+        cetz.draw.line(
+          stroke: style.at("xstroke", default: style.stroke),
+          mark: style.at("xmark", default: style.mark),
+          (ancs.at("x-", default: ancs.at("c")).x, ancs.at("x-", default: ancs.at("c")).y),
+          (ancs.at("x+", default: ancs.at("c")).x, ancs.at("x+", default: ancs.at("c")).y),
+        )
+      }
+      if "y-" in ancs or "y+" in ancs {
+        cetz.draw.line(
+          stroke: style.at("ystroke", default: style.stroke),
+          mark: style.at("ymark", default: style.mark),
+          (ancs.at("y-", default: ancs.at("c")).x, ancs.at("y-", default: ancs.at("c")).y),
+          (ancs.at("y+", default: ancs.at("c")).x, ancs.at("y+", default: ancs.at("c")).y),
+        )
+      }
+    })
+  }
+
   renderer((
     rect: draw-rect,
     circle: draw-circle,
@@ -407,5 +431,6 @@
     spring: draw-spring,
     terrain: draw-terrain,
     trajectory: draw-trajectory,
+    axes: draw-axes,
   ))
 }
