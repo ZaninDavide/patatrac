@@ -18,14 +18,14 @@
     let after = points.at(i + 1, default: points.first())
     let middle = anchors.lerp(current, after, 50%)
 
-    let left = anchors.x-look-from(current, after)
+    let left = anchors.x-look-at(current, after)
     let center = anchors.anchor(middle.x, middle.y, left.rot)
     let right = anchors.anchor(after.x, after.y, left.rot)
 
-    ancs.insert(str(i + 1) + "l", left)
+    ancs.insert(str(i + 1) + "i", left)
     ancs.insert(str(i + 1), center)
-    ancs.insert(str(i + 1) + "r", right)
+    ancs.insert(str(i + 1) + "o", right)
   }
 
-  return object("polygon", "1", ancs, data: (count: points.len()))
+  return object("polygon", "1i", ancs, data: (count: points.len()))
 }

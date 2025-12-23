@@ -4,7 +4,7 @@
 /// Creates an object of type "axes" constituted by two orthogonal lines
 /// meeting at the origin. Each line can be symmetrical, meaning it extends
 /// into the positive and negative direction by the same amount, or asymmetrical.
-/// If an axis is symmetrical its length can be specified with a number, otherwise
+/// If an axis is symmetrical its length can be specified with a number or length, otherwise
 /// an array `(negative-extension, positive-extension)` is required.
 #let axes(at, xlength, ylength, rot: true) = {
   let anc = anchors.to-anchor(at)

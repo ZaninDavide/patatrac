@@ -9,22 +9,22 @@
     
     "t": anchor(radius*0, +radius, 0deg),
 
-    "lt": anchor(-radius/sqrt2, +radius/sqrt2, 45deg),
+    // "lt": anchor(-radius/sqrt2, +radius/sqrt2, 45deg),
     "tl": anchor(-radius/sqrt2, +radius/sqrt2, 45deg),
     
     "l": anchor(-radius, radius*0, 90deg),
     
     "bl": anchor(-radius/sqrt2, -radius/sqrt2, 90deg+45deg),
-    "lb": anchor(-radius/sqrt2, -radius/sqrt2, 90deg+45deg),
+    // "lb": anchor(-radius/sqrt2, -radius/sqrt2, 90deg+45deg),
     
     "b": anchor(radius*0, -radius, 180deg),
 
-    "rb": anchor(+radius/sqrt2, -radius/sqrt2, 180deg+45deg),
+    // "rb": anchor(+radius/sqrt2, -radius/sqrt2, 180deg+45deg),
     "br": anchor(+radius/sqrt2, -radius/sqrt2, 180deg+45deg),
     
     "r": anchor(+radius, radius*0, 270deg),
 
     "tr": anchor(+radius/sqrt2, +radius/sqrt2, 270deg+45deg-360deg),
-    "rt": anchor(+radius/sqrt2, +radius/sqrt2, 270deg+45deg-360deg),
+    // "rt": anchor(+radius/sqrt2, +radius/sqrt2, 270deg+45deg-360deg),
   ))
 }

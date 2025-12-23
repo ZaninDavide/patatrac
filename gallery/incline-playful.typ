@@ -6,11 +6,13 @@
 #place(center + horizon, patatrac.cetz.canvas(length: 0.5mm, {
   import patatrac: *
   let draw = cetz.standard(
-    rect: (stroke: 0.75pt, fill: white),
-    circle: (stroke: 0.75pt),
-    arrow: (stroke: 0.75pt, mark: (end: "stealth", fill: black)),
-    incline: (stroke: 0.75pt),
-    rope: (stroke: 0.75pt),
+    rect: style => {
+      if "color" in style {
+        style.fill = style.color
+        style.stroke = 2pt + style.color.darken(60%)
+      }
+      style
+    }
   )
 
   let sideA = 20
@@ -34,24 +36,23 @@
   let tension1 = arrow(A("r"), 20)
   let tension2 = arrow(B("t"), 20)
 
-  let dotted = tiling(
-    size: (1pt, 1pt), 
-    pad(std.circle(radius: 0.1pt, fill: black, stroke: none), 0.5pt)
-  )
-
-  draw(I, fill: dotted)
-  draw(L, C, R, tension1, tension2)
+  draw(L, stroke: 2pt)
+  draw(I, C, stroke: 2pt, fill: luma(90%))
+  draw(R, stroke: 2pt + rgb("#995708"))
+  
+  draw(tension1, tension2, stroke: 2pt)
   draw(point(tension1("end"), rot: false), lx: -8, ly: 2, label: $std.math.arrow(T)_1$, align: bottom)
   draw(point(tension2("c"), rot: false), lx: 10, label: $std.math.arrow(T)_2$, align: bottom)
-  draw(point(C("c")), radius: 1pt)
+  draw(point(C("c")))
   
-  draw(axes(A("c"), 0, 40), stroke: (paint: black, thickness: 0.5pt, dash: "dashed")) 
-  draw(A, B)
-  draw(point(A("c")), label: $M$)
-  draw(point(B("c")), label: $m$, ly: 1)
+  draw(axes(A("c"), 0, 40), stroke: (paint: black, thickness: 2pt, dash: "dashed")) 
+  draw(A, color: blue)
+  draw(B, color: red)
+  draw(point(A("c")), label: text(fill: white, $M$))
+  draw(point(B("c")), label: text(fill: white, $m$), ly: 1)
   
   let coord(a) = { let a = anchors.to-anchor(a); return (a.x, a.y) }
-  cetz.angle.angle(label: $alpha$, radius: 30, label-radius: 38, stroke: 0.5pt, 
+  cetz.angle.angle(label: $alpha$, radius: 30, label-radius: 38, stroke: 2pt, 
     coord(I("bl")), 
     coord(I("br")), 
     coord(I("tr")), 

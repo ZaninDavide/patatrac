@@ -203,7 +203,7 @@
     let ancs = obj("anchors")
     return cetz.draw.line(close: true, stroke: style.stroke, fill: style.fill,
       ..for i in range(0, obj("data").count) {
-        ((ancs.at(str(i + 1) + "l").x, ancs.at(str(i + 1) + "l").y), )
+        ((ancs.at(str(i + 1) + "i").x, ancs.at(str(i + 1) + "i").y), )
       }
     )
   }

@@ -11,14 +11,14 @@
 }
 
 #set text(size: 12pt)
-#set page(margin: (left: 4cm, top: 3cm, bottom: 3cm, right: 4cm), footer:  context {
-  set align(center)
-  v(1fr)
-  counter(page).display("1")
-  v(1fr)
-})
+#set page(margin: (left: 4cm, top: 3cm, bottom: 3cm, right: 4cm), numbering: none)
 #set par(justify: true)
 #set heading(numbering: "1.1")
+#show heading.where(level: 1): it => {
+  set text(size: 21pt)
+  pagebreak(weak: true)
+  it
+}
 
 #import "@preview/zebraw:0.6.1": zebraw
 #show raw.where(block: false): set raw(lang: "typc")
@@ -44,15 +44,29 @@
     the funny sound of something messy\ suddenly collapsing onto itself
   ]
 
-  v(70pt)
+  v(10pt)
 })
 
-= Introduction
-This Typst package provides help with the typesetting of physics diagrams depicting classical mechanical systems. The goal: 
+#block(stroke: (thickness: 0.5pt), inset: 20pt)[
+*Description*: This Typst package provides help with the typesetting of physics diagrams depicting classical mechanical systems. The goal:
 
 #align(center, [_drawing beautiful physics diagrams without trigonometry._])
 
 The workflow is based on a strict separation between the composition and the rendering of the diagrams. The package is 100% #link("https://typst.app/universe/package/cetz")[`cetz`]-compatible.
+]
+
+#pagebreak()
+
+#outline(title: "Index")
+
+#pagebreak()
+
+#set page(footer:  context {
+  set align(center)
+  v(1fr)
+  counter(page).display("1")
+  v(1fr)
+})
 
 = Tutorial
 In this tutorial we will assume that `cetz` is the rendering engine of choice, which at the moment is the only one supported out of the box. The goal is to draw the figure below: two boxes connected by a spring laying on a sloped surface. 
@@ -409,23 +423,156 @@ let my-renderer = renderer(cetz.standard("functions") + (
 
 #pagebreak()
 
-= Some interesting object types
-We will now spend a few words to describe how to work with a few types of objects that deserve a special treatment in this discussion. To be clear, `patatrack` treats these like all other object types. 
+#import "@preview/tidy:0.4.3" as tidy
+#let doc-fun(fun) = raw({
+  str(fun.name)
+  "("
+  for (key, value) in fun.args {
+    (str(key) + if "default" in value {
+      ": " + str(value.default)
+    }, )
+  }.join(", ")
+  ")"
+  if fun.return-types != none {
+    " -> "
+    for rt in fun.return-types {
+      str(rt)
+    }
+  }
+})
+#let find-constructor(obj-name) = doc-fun(tidy.parse-module(read("src/objects/" + obj-name + ".typ")).functions.filter(f => f.name == obj-name).at(0))
+
+= Objects one by one
+We will now go through the various object constructors one by one. In what follows, we will omit the boilerplate and the rendering stage, in order to focus on composition.
+
+== Rectangles
+The constructor #find-constructor("rect") takes only the width and the height of the rectangle.
+```typc
+rect(80,300)
+```
+#canvas({
+  import patatrac: *
+  let draw = cetz.standard()
+  let debug = cetz.debug()
+  draw(rect(80,30))
+  debug(rect(80,30))
+})
+
+== Circles
+The constructor #find-constructor("circle") takes only the radius of the circle.
+```typc
+circle(20)
+```
+#canvas({
+  import patatrac: *
+  let draw = cetz.standard()
+  let debug = cetz.debug()
+  draw(circle(20))
+  debug(circle(20))
+})
+
+== Inclines
+The constructor #find-constructor("incline") takes the incline width and the angle between base and hypotenuse.
+```typc
+incline(80, 20deg)
+```
+#canvas({
+  import patatrac: *
+  let draw = cetz.standard()
+  let debug = cetz.debug()
+  draw(incline(80, 20deg))
+  debug(incline(80, 20deg))
+})
+
+== Polygons
+The constructor #find-constructor("polygon") takes a series of anchors representing in clockwise order the vertices of a 2D shape.
+```typc
+polygon((0,0), (40,40), (80, 40))
+```
+#canvas({
+  import patatrac: *
+  let draw = cetz.standard()
+  let debug = cetz.debug()
+  draw(polygon((0,0), (40,40), (80, 40)))
+  debug(polygon((0,0), (40,40), (80, 40)))
+})
+
+== Arrows
+The constructor #find-constructor("arrow") takes an anchor and a length. The arrow is located at the anchor's location and oriented towards the positive $y$ direction of the specified anchor. If the named parameter `angle` is set to something different from `none`, the arrow's orientation is instead determined by its value.
+```typc
+arrow((0,0,20deg), 20)
+arrow((30,0,20deg), 20, angle: 40deg)
+```
+#canvas({
+  import patatrac: *
+  let draw = cetz.standard()
+  let debug = cetz.debug()
+  let a = arrow((0,0,20deg), 40)
+  let b = arrow((60,0,20deg), 40, angle: 40deg)
+  draw(a, b,)
+  debug(a, b, fill: orange)
+})
+
+== Springs
+The constructor #find-constructor("spring") takes two anchors whose location determines where the spring starts and ends.
+```typc
+spring((0,0), (25,25))
+```
+#canvas({
+  import patatrac: *
+  let draw = cetz.standard()
+  let debug = cetz.debug()
+  draw(spring((0,0), (25,25)))
+  debug(spring((0,0), (25,25)))
+})
+
+== Axes
+The constructor #find-constructor("axes") takes an anchor and two lengths, for the two axes. The specified lengths are one sided, meaning that the total axis length is double that. If an axis extends into the positive and negative directions by different amounts its length must be specified as an array `(negative-extension, positive-extension)`.
+```typc
+axes((0,0,30deg), 20, 10)
+axes((80,0,20deg), (0, 20), 10)
+axes((160,0,10deg), 0, 30)
+```
+#canvas({
+  import patatrac: *
+  let draw = cetz.standard()
+  let debug = cetz.debug()
+  let a = axes((0,0,30deg), 30, 20)
+  let b = axes((80,0,20deg), (0,20), 20)
+  let c = axes((160,0,10deg), 0, 30, rot: false)
+  draw(a, b, c)
+  debug(a, b, c, fill: orange)
+})
+As seen in the last example, a named parameter `rot` can be set to `false` to make the constructor ignore the anchor's rotation.
+
+== Points
+The constructor #find-constructor("point") takes a single anchor. A named parameter `rot` can be set to `false` to make the constructor ignore the anchor's rotation.
+```typc
+point((0,0,30deg))
+point((50,0,30deg), rot: false)
+```
+#canvas({
+  import patatrac: *
+  let draw = cetz.standard()
+  let debug = cetz.debug()
+  let a = point((0,0,30deg))
+  let b = point((50,0,30deg), rot: false)
+  draw(a, b)
+  debug(a, b)
+})
 
 == Ropes
-Normally, drawing #link("https://en.wikipedia.org/wiki/Atwood_machine")[Atwood machines] tends to be really cumbersome, but with `patatrack` pulleys are extremely easy to draw, thanks to the mechanics of `rope`s. The main idea behind how ropes work is the following:
+The main idea behind how ropes work is the following:
 
 #align(center)[_ropes are one dimensional strings that wrap around anchors and circles._]
 
-To create a rope all you have to do is to provide the list of anchors and circles that 
-you want the rope to wrap around. Since there are two ways in which any given rope can wrap around a circle, the rotation of the active anchor of the circle will tell the rope from which direction to start "orbiting" around the circle. An example will make everything very clear.
+The constructor #find-constructor("rope") requires the list of anchors and circles that 
+you want the rope to wrap around. Since there are two ways in which any given rope can wrap around a circle, the rotation of the active anchor of the circle will tell the rope from which direction to start "orbiting" around the circle.
 
 ```typc
 let C1 = circle(15)
 let C2 = place(circle(10), (50, 0))
 let R = rope((-50, 0), C1("b"), C2("t"), (+100, 0))
-draw(C1, C2)
-draw(R, stroke: 2pt + blue)
 ```
 #canvas({
   import patatrac: *
@@ -452,34 +599,13 @@ Ropes provide many different anchors. Anchors are named with increasing whole nu
   [#R("anchors")]
 }
 
-Really, there isn't anything more to say about ropes: they just work.
-
-
-#let stripes(fill, stroke, width, angle: 60deg) = {
-  assert(angle >  0deg)
-  assert(angle < 90deg)
-  return tiling(
-    size: (width, width*calc.tan(angle)), {
-      place(rect(width: 100%, height: 100%, fill: fill))
-      place(line(start: (0%, 0%), end: (100%, 100%), stroke: stroke))
-      place(line(start: (100%, 0%), end: (200%, 100%), stroke: stroke))
-      place(line(start: (0%, 100%), end: (100%, 200%), stroke: stroke))
-      place(line(start: (-100%, 0%), end: (0%, 100%), stroke: stroke))
-      place(line(start: (0%, -100%), end: (100%, 0%), stroke: stroke))
-    }
-  )
-}
-
 == Terrains
-Terrains are objects that you can use to create arbitrarily shaped surfaces. All you need to create a `terrain` is a function describing the profile and its domain, expressed as a tuple `(min, max)`.
-
+Terrains are objects that you can use to create arbitrarily shaped surfaces. The constructor #find-constructor("terrain") takes a function describing the profile and its domain, expressed as a tuple `(min, max)`. The named parameter `scale` is a prefactor that is applied to the coordinates before calculating the anchors' positions and before drawing.
 ```typc
 let ground = terrain(
   x => 0.1 + x*x, (0, 1),
   scale: 100, A: 30%, B: 0.6,
 )
-draw(ground, fill: luma(90%))
-debug(ground)
 ```
 #canvas({
   import patatrac: *
@@ -492,22 +618,16 @@ debug(ground)
   draw(ground, fill: luma(90%))
   debug(ground)
 })
-
-Here we are also specifying two points $A$ and $B$, by giving their position on the specified range either as number or ratio, which are automatically added as anchors tangent to the surface.
+Here we are also specifying two points $A$ and $B$, by giving their position on the specified range either as number or ratio. These points are automatically added as anchors tangent to the surface. In order to rotate the anchors correctly `patatrac` needs to differentiate numerically the given function. The named parameter `epsilon` specifies the step size for the incremental ratio used to approximate the derivative. 
 
 == Trajectories
-Trajectories are objects that you can use to create arbitrarily shaped curves. All you need to create a `trajectory` is a function parametrizeing the curve and its domain, expressed as a tuple `(min, max)`.
-
-
+Trajectories are objects that you can use to create arbitrarily shaped curves. The constructor #find-constructor("trajectory") takes a function parametrizing the curve and its domain, expressed as a tuple `(min, max)`.
 ```typc
 let motion = trajectory(
   t => (1.5*calc.sin(t), calc.cos(t)), (0, 2),
   scale: 50, A: 30%, B: 1.2,
 )
-draw(motion, stroke: (dash: "dashed", thickness: 1pt))
-debug(motion)
 ```
-
 #canvas({
   import patatrac: *
   let debug = cetz.debug()
@@ -520,36 +640,18 @@ debug(motion)
   debug(motion)
 })
 
-Here we are also specifying two points $A$ and $B$, by giving their position on the specified range either as number or ratio, which are automatically added as anchors tangent to the curve.
 
+Here we are also specifying two points $A$ and $B$, by giving their position on the specified range either as number or ratio. These points are automatically added as anchors tangent to the curve. In order to rotate the anchors correctly `patatrac` needs to differentiate numerically the given function. The named parameter `epsilon` specifies the step size for the incremental ratio used to approximate the derivative. 
 
 #pagebreak()
 
 = Useful lists
-In this section you'll find a few useful lists. These lists are generated semi-automatically and errors are possible; let me know if you find any. 
+In this section you'll find a few useful lists. These lists are generated semi-automatically. 
 
 #let doc(filename) = {
-  import "@preview/tidy:0.4.3" as tidy
   let docs = tidy.parse-module(read(filename))
   for fun in docs.functions.sorted(key: fun => fun.name) {
-    ({
-      raw({
-        str(fun.name)
-        "("
-        for (key, value) in fun.args {
-          (str(key) + if "default" in value {
-            ": " + str(value.default)
-          }, )
-        }.join(", ")
-        ")"
-        if fun.return-types != none {
-          " -> "
-          for rt in fun.return-types {
-            str(rt)
-          }
-        }
-      })
-    },)
+    (doc-fun(fun),)
   }
 }
 
@@ -580,7 +682,3 @@ Here is the list of all object related functions. These are all available direct
 Under the namespace `patatrac.anchors` you can find
 
 #list(..doc("src/anchors.typ"))
-
-#pagebreak()
-
-#outline(title: "Index")
